@@ -1,6 +1,20 @@
 from HashTable import HashTable
 from Package import Package
+from data import import_distance
 
-package1 = Package('680 Country Lane', 'Frankenmuth', 'MI', 48734, '09:45:00', 2.3)
 
-print(package1.getLocation())
+#print(packages[7]['packageId'])
+#packages[7]['packageLocation'] = 'On the truck'
+#print(packages[7]['packageLocation'])
+
+dist_list = import_distance()
+packages = HashTable(40)
+
+for item in dist_list:
+    package = Package(item[0], item[1], item[2], item[3], item[4], item[5], item[6])
+    packages.insert(package['packageId'], package)
+
+print(packages['1'])
+
+
+

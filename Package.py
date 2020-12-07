@@ -1,5 +1,7 @@
 class Package:
-    def __init__(self, address, city, state, zip_code, delivery_deadline, mass_kg):
+
+    def __init__(self, package_id, address, city, state, zip_code, delivery_deadline, mass_kg):
+        self.packageId = package_id
         self.address = address
         self.city = city
         self.state = state
@@ -9,29 +11,18 @@ class Package:
         self.packageLocation = "At the hub"
         self.pickupTime = None
 
-    def getAddress(self):
-        return self.address
+    def packageView(self):
+        return {'packageId': self.packageId, 'address': self.address, 'city': self.city, 'state': self.state, 'zipcode': self.zipCode, 'deadline': self.deadline, 'mass': self.mass,
+        'packageLocation': self.packageLocation,'pickupTime': self.pickupTime}
 
-    def getCity(self):
-        return self.city
+    def get(self, attribute):
+        return getattr(self, attribute)
 
-    def getState(self):
-        return self.state
+    def __getitem__(self, attribute):
+        return getattr(self, attribute)
 
-    def getZip(self):
-        return self.zipCode
-
-    def getDeadline(self):
-        return self.deadline
-
-    def getMass(self):
-        return self.mass
-
-    def getLocation(self):
-        return self.packageLocation
-
-    def getPickupTime(self):
-        return self.pickupTime
+    def __setitem__(self, attribute, newValue):
+        return setattr(self, attribute, newValue)
 
     
 
