@@ -14,7 +14,6 @@ class HashTable:
         else:
             self.capacity *= 2
             self.size += 1
-            index = int(key)
             self.list[index] = value
 
     def get(self, key):
