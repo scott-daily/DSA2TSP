@@ -1,5 +1,4 @@
 class Package:
-
     def __init__(self, package_id, address, city, state, zip_code, delivery_deadline, mass_kg):
         self.packageId = package_id
         self.address = address

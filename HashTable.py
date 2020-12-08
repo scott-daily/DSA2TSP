@@ -1,5 +1,3 @@
-from Package import Package
-
 class HashTable:
     def __init__(self, initial_capacity):
         self.capacity = initial_capacity
