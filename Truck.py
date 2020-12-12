@@ -1,9 +1,13 @@
 class Truck:
-    def __init__(self, packageList):
+    def __init__(self):
         self.packageList = []
 
     def loadPackage(self, package):
-        packageList.append(package)
+        self.packageList.append(package)
 
     def unloadPackage(self, package):
-        packageList.remove(package)
+        self.packageList.remove(package)
+
+
+    def __repr__(self):
+        return str(self.packageList)

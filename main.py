@@ -1,7 +1,11 @@
+import pprint
+import time
+
 from hashtable import HashTable
 from package import Package
 from data import import_packages, import_distances
-from graph import Graph, Vertex
+from truck import Truck
+from simulate import buildRoute
 
 
 #print(packages[7]['packageId'])
@@ -13,6 +17,30 @@ package_list = import_packages()
 
 # Initiate custom hash table with 41 slots
 packages = HashTable(41)
+#print(package_list)
+truck1_list = [12,13,14,15,16,20,21,22,23,26,27,29,31,33,34,40]
+truck2_list = [1,3,4,8,7,18,25,28,30,33,35,36,37,38,39] #truck2 cannot leave depot until 9:05 am due to delayed packages
+
+truck1 = Truck()
+for package in truck1_list:
+    truck1.loadPackage(package_list[package-1])
+
+truck2 = Truck()
+for package in truck2_list:
+    truck2.loadPackage(package_list[package-1])
+
+#print(truck2)
+
+#buildRoute(truck1)
+#buildRoute(truck2)
+
+time1 = time.strptime("7:40 AM", "%I:%M %p")
+time2 = time.strptime("6:38 AM", "%I:%M %p")
+
+print(time1 > time2)
+
+
+#print(truck1)
 
 # Use the import_distances function to transfer CSV distance data into a list of list
 distance_table = import_distances()
@@ -26,8 +54,8 @@ dist_map = {'HUB': 0,'1060 Dalton Ave S': 1, '1330 2100 S': 2, '1330 2100 S': 3,
 
 #print(distance_table)
 
-# Iterate through each list the imported list of Packages.  
-# Initiate a new package with the associated values and then insert that into the custom packages hash table.
+# Iterate through each list in the imported list of Packages.  
+# Create a new package with the associated parameters and then insert that into the custom packages hash table.
 for item in package_list:
     package = Package(item[0], item[1], item[2], item[3], item[4], item[5], item[6])
     packages.insert(package['packageId'], package)
@@ -36,23 +64,17 @@ for item in package_list:
 #print(packages[1].packageView())
 
 # Print out the distance between two addreses using the dist_map address keys rather than dealing with numbers
-print(distance_table[dist_map['HUB']][dist_map['3148 S 1100 W']])
+#print(distance_table[dist_map['4300 S 1300 E']][dist_map['6351 South 900 East']])
 
-#Create a new graph to use
-city_graph = Graph()
 
 #Convert the keys in the dist_map into a list of addresses
-city_list = list(dist_map.keys())
-print(city_list)
+address_list = list(dist_map.keys())
 
-# Iterate through the addresses in the dist_map key values and add them to the city graph
-for address in dist_map.keys():
-    city_graph.add_address(address)
+    
+#city_graph.add_edge(address_list[i],address_list[j],distance_table[i + 1][j + 1])
 
-# Iterate through the dist_map with two loops, O(N^2) time.
-# Add all the weighted edges between each address and the distance between them from the distance table.
-for i in range(len(dist_map)):
-    for j in range(len(dist_map)):
-        city_graph.add_edge(city_list[i],city_list[j],distance_table[i][j])
+#print(distance_table[25][26])
 
+pretty_print = pprint.PrettyPrinter()
 
+#pretty_print.pprint(city_graph)

@@ -10,6 +10,7 @@ class HashTable:
             self.list[index] = value
             self.size += 1
         else:
+            index = int(key)
             self.capacity *= 2
             self.size += 1
             self.list[index] = value
