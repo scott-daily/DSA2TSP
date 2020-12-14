@@ -38,12 +38,8 @@ def buildRoute(truck):
                 else:
                     no_deadline_packages.append(package)
 
-            ### READ ME!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            ## When adding packages to the priority_packages list & no_deadline_list check to see if they are duplicate
-            # addresses, if same deadline & address, only need one and can remove others.
-
-
             # Check that the priority packages list has more than one item, otherwise not necessary to sort
+            # Sort the priority packages by the Time field after converting the string into a Time object so that the comparison operator can compare them
             if (len(priority_packages) > 1):
                 sorted_priority_packages = sorted(priority_packages, key=lambda package: time.strptime(package[5], "%I:%M %p"))
 
@@ -51,41 +47,42 @@ def buildRoute(truck):
                 highest_priority = sorted_priority_packages[0]
                 # Use strptime to convert the string formatted time of the Package object into a Time Python object so that the deadlines can be compared with comparison operators
                 for package in priority_packages:
-                    #print(highest_priority[5])
                     # See large comment block below if statement below for explanation
-                    if (time.strptime(package[5], "%I:%M %p") > time.strptime(highest_priority[5], "%I:%M %p")):
-                        route_list.append(highest_priority[1])
-                        print(route_list)
-                        priority_packages.remove(highest_priority)
-                        print(priority_packages)   
-                        highest_priority = package 
+                    # Check if the sorted package's time is less than the package in priority_packagesdatetime A combination of a date and a time. Attributes: ()
+                    # Also check that the address is not the same, which would mean they are two packs with the same destination and different deadlines
+                    # Adding this could result in a duplicate address in the route_list
+                    if ((time.strptime(package[5], "%I:%M %p") > time.strptime(highest_priority[5], "%I:%M %p")) and (package[1] not in route_list)):
+                            route_list.append(highest_priority[1])
+                            highest_priority = package 
                     else:
                         # Make sure route_list contains a starting address.  If all deadlines are equal then the route_list will be empty when this else block is executed.
+                        # Will receive an index out of bounds error if this occurs
                         if (len(route_list) == 0):
-                            route_list.append(priority_packages[0][1])
-                            priority_packages.remove(priority_packages[0])
+                            if (priority_packages[0][1] not in route_list):
+                                route_list.append(priority_packages[0][1])
+                                priority_packages.remove(priority_packages[0])
 
                         least_distance = 999.0
                         next_address = None
-                        print(priority_packages)
                         for i in range(len(priority_packages)):
-                            print(i)
-                            print(priority_packages[i][1])
-                            if (route_list[-1] != priority_packages[i][1]):
+                            if (priority_packages[i][1] not in route_list):
                                 if (float(distance_table[dist_map[route_list[-1]]][dist_map[priority_packages[i][1]]]) < least_distance):
                                     print(route_list[-1])
                                     next_address = priority_packages[i][1]
                                     print(next_address)
                                     least_distance = float(distance_table[dist_map[route_list[-1]]][dist_map[priority_packages[i][1]]])
-                                    print(distance_table[dist_map[route_list[-1]]][dist_map[priority_packages[i][1]]])
-                                    #print(priority_packages[i][1])
-                                    #print(priority_packages([i+1][1]))
-                                    #print(next_address)
-                                    #print(route_list)
+                                    print(least_distance)
+                                    route_list.append(next_address)
+            print(route_list)
                                 
+            #for package in no_deadline_packages:
 
 
-                        
+
+
+
+
+
                         # Check to see if next package in the list is a later time or not.  If it is later, then 
                         # the current highest_priority packages address should be added to the route list as the first address to visit
                         # Assign the curr package to the highest_priority variable and check if next pack is a later time.  If it is
@@ -97,7 +94,6 @@ def buildRoute(truck):
                         # Now add the final highest_priority package to the route list as the first route.
                         # Next, (MAYBE LOOP THROUGH PRIORITY_PACKAGES AND SORT AND THEN ADD SORTED ADDRESSES TO ROUTE LIST)
                 
-                print(highest_priority)
 
 # time1 = time.strptime("7:40 AM", "%I:%M %p")
 # time2 = time.strptime("6:38 AM", "%I:%M %p")

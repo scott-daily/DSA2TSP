@@ -18,8 +18,8 @@ package_list = import_packages()
 # Initiate custom hash table with 41 slots
 packages = HashTable(41)
 #print(package_list)
-truck1_list = [12,13,14,15,16,20,21,22,23,26,27,29,31,19,34,40]
-truck2_list = [6,1,3,4,8,7,18,25,28,30,33,35,36,37,38,39] #truck2 cannot leave depot until 9:05 am due to delayed packages
+truck1_list = [15,16,14,20,21,31,40,29,13,12,22,23,26,27,19,34]
+truck2_list = [25,6,1,4,8,7,18,3,28,30,33,35,36,37,38,39] #truck2 cannot leave depot until 9:05 am due to delayed packages
 
 truck1 = Truck()
 for package in truck1_list:
@@ -31,8 +31,8 @@ for package in truck2_list:
 
 #print(truck2)
 
-#buildRoute(truck1)
-buildRoute(truck2)
+buildRoute(truck1)
+#buildRoute(truck2)
 
 
 #print(truck1)
