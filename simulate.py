@@ -10,7 +10,7 @@ distance_table = import_distances()
 package_list = import_packages()
 packages = HashTable(41)
 
-dist_map = {'HUB': 0,'1060 Dalton Ave S': 1, '1330 2100 S': 2, '1330 2100 S': 3, '177 W Price Ave': 4, '195 W Oakland Ave': 5, '2010 W 500 S': 6,
+dist_map = {'HUB': 0,'1060 Dalton Ave S': 1, '1330 2100 S': 2, '1488 4800 S': 3, '177 W Price Ave': 4, '195 W Oakland Ave': 5, '2010 W 500 S': 6,
                         '2300 Parkway Blvd': 7, '233 Canyon Rd': 8, '2530 S 500 E': 9, '2600 Taylorsville Blvd': 10, '2835 Main St': 11, '300 State St': 12,
                         '3060 Lester St': 13, '3148 S 1100 W': 14, '3365 S 900 W': 15, '3575 W Valley Central Station bus Loop': 16, '3595 Main St': 17, 
                         '380 W 2880 S': 18, '410 S State St': 19, '4300 S 1300 E': 20, '4580 S 2300 E': 21, '5025 State St': 22, '5100 South 2700 West': 23, 
@@ -73,14 +73,36 @@ def buildRoute(truck):
                                     least_distance = float(distance_table[dist_map[route_list[-1]]][dist_map[priority_packages[i][1]]])
                                     print(least_distance)
                                     route_list.append(next_address)
-            print(route_list)
+
+            # Check to see if no deadline packages has 1 or more packages within it.  
+            # If it does, then will iterate through as done in the previous section with the priority
+            # packages and compare the distance of package to others to find the nearest neighbor.  
+            if (len(no_deadline_packages) >= 1):
+                for package in no_deadline_packages:
+                    if package[1] not in route_list:
+                        #print(package[1])
+                        #print(package[0])
+                        least_distance = 999.0
+                        next_address = None
+
+                        for i in range(len(no_deadline_packages)):
+                            if (float(distance_table[dist_map[route_list[-1]]][dist_map[no_deadline_packages[i][1]]]) < least_distance):
+                                if (dist_map[route_list[-1]] != dist_map[no_deadline_packages[i][1]]):
+                                    if (no_deadline_packages[i][1] not in route_list):
+                                        print(route_list[-1])
+                                        next_address = no_deadline_packages[i][1]
+                                        print(next_address)
+                                        least_distance = float(distance_table[dist_map[route_list[-1]]][dist_map[no_deadline_packages[i][1]]])
+                                        print(least_distance)
+                                        route_list.append(next_address)
+
+
+
+                print(route_list)
+
+            # TODO: ADD SECTION FOR NON_DEADLINE_PACKAGES NOW 
                                 
             #for package in no_deadline_packages:
-
-
-
-
-
 
 
                         # Check to see if next package in the list is a later time or not.  If it is later, then 
