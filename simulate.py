@@ -32,11 +32,11 @@ def buildRoute(truck):
 
     # If len is 0 then starting address is the Hub
     if (len(route_list) == 0):
-            for package in package_list:
-                if (package[5] != 'EOD'):
-                    priority_packages.append(package)
-                else:
-                    no_deadline_packages.append(package)
+        for package in package_list:
+            if (package[5] != 'EOD'):
+                priority_packages.append(package)
+            else:
+                no_deadline_packages.append(package)
 
             # Check that the priority packages list has more than one item, otherwise not necessary to sort
             # Sort the priority packages by the Time field after converting the string into a Time object so that the comparison operator can compare them
@@ -62,23 +62,41 @@ def buildRoute(truck):
                                 route_list.append(priority_packages[0][1])
                                 priority_packages.remove(priority_packages[0])
 
-                        least_distance = 999.0
                         next_address = None
+                        print('priority_packages length')
+                        print(len(priority_packages))
                         for i in range(len(priority_packages)):
-                            if (priority_packages[i][1] not in route_list):
-                                if (float(distance_table[dist_map[route_list[-1]]][dist_map[priority_packages[i][1]]]) < least_distance):
-                                    print(route_list[-1])
-                                    next_address = priority_packages[i][1]
-                                    print(next_address)
-                                    least_distance = float(distance_table[dist_map[route_list[-1]]][dist_map[priority_packages[i][1]]])
-                                    print(least_distance)
-                                    route_list.append(next_address)
+                            print(i)
+                            print(route_list[-1])
+                            print(priority_packages[i][1])
+                            least_distance = float(distance_table[dist_map[route_list[-1]]][dist_map[priority_packages[i][1]]])
+                            print('LEAST_DISTANCE:')
+                            print(least_distance)
+                            for j in range(len(priority_packages)):
+                                if (priority_packages[j][1] not in route_list):
+                                    if (priority_packages[j][1] is not None):
+                                        if (float(distance_table[dist_map[route_list[-1]]][dist_map[priority_packages[j][1]]]) < least_distance):
+                                            print(route_list[-1])
+                                            next_address = priority_packages[j][1]
+                                            print(next_address)
+                                            least_distance = float(distance_table[dist_map[route_list[-1]]][dist_map[priority_packages[j][1]]])
+                                            print(least_distance)
+
+                        if (next_address is not None):
+                            print('adding to to route list')
+                            print(next_address)         
+                            route_list.append(next_address)
+
+                    print(route_list)
 
             # Check to see if no deadline packages has 1 or more packages within it.  
             # If it does, then will iterate through as done in the previous section with the priority
             # packages and compare the distance of package to others to find the nearest neighbor.  
             if (len(no_deadline_packages) >= 1):
                 for package in no_deadline_packages:
+                    print(no_deadline_packages)
+                    print('printing package')
+                    print(package)               # <----- ADDED 9:54 12/16/2020
                     if package[1] not in route_list:
                         #print(package[1])
                         #print(package[0])
