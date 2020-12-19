@@ -138,6 +138,10 @@ def minutesToTime(minutes):
 
 print(minutesToTime(timeToMinutes('2:42 PM')))
 
+# To run complete simulation, run simulate three times with each trucks route list and start & end times. (Use 5 or 6 PM for end times on full simulation)
+# For function so that someone can enter a time and see all package data, use the time they want to see data for as the end time.  
+# This way, the simulate function will only "deliver" packages until the end_time and then we will report all package statuses at this time to 
+# show all the package statuses or a specific packages status.
 
 #def simulate(route_list,start_time,end_time):
 
