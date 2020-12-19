@@ -39,12 +39,6 @@ def buildRoute(truck):
             if (package[1] not in no_deadline_package_address_list and package[1] not in priority_package_address_list):
                 no_deadline_package_address_list.append(package[1])
                 no_deadline_packages.append(package)
-    
-    print('Priority Package List:')
-    print(priority_package_address_list)
-
-    print('No Deadline Packages')
-    print(no_deadline_package_address_list)
 
     while (len(priority_packages) >= 1):
         if (len(priority_packages) == 1):
@@ -118,17 +112,20 @@ def buildRoute(truck):
                     if package[1] == next_address:
                         no_deadline_packages.remove(package)
 
-    print("Final Route:")
-    print(route_list)
+    return route_list
 
+def routeDistance(route_list):
     total_distance = 0
 
     for i in range(len(route_list)):
         if (i != len(route_list)-1):
             distance_between = float(distance_table[dist_map[route_list[i]]][dist_map[route_list[i+1]]])
             total_distance += distance_between
-            print("Distance between ", route_list[i]," and ", route_list[i+1]," is ", distance_between)
+            #print("Distance between ", route_list[i]," and ", route_list[i+1]," is ", distance_between)
 
-    print("The total distance of the route is: ", total_distance)
+    #print("The total distance of the route is: ", total_distance)
+
+    return(total_distance)
+
 
         

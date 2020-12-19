@@ -8,13 +8,16 @@ class Package:
         self.deadline = delivery_deadline
         self.mass = mass_kg
         self.packageLocation = "At the hub"
-        self.deliveryTime = None
+        self.deliveryTime = "None"
         #if packageLocation is == 'Delivered', when user checks packages at a time, then return the delivered at: + self.deliveryTime.  
         # update self.deliveryTime when package is delivered during simulation
 
     def packageView(self):
         return {'packageId': self.packageId, 'address': self.address, 'city': self.city, 'state': self.state, 'zipcode': self.zipCode, 'deadline': self.deadline, 'mass': self.mass,
-        'packageLocation': self.packageLocation,'pickupTime': self.pickupTime}
+        'packageLocation': self.packageLocation,'deliveryTime': self.deliveryTime}
+
+    def setLocation(self, location):
+        self.packageLocation = location
 
     def get(self, attribute):
         return getattr(self, attribute)

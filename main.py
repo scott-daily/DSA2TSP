@@ -5,7 +5,7 @@ from hashtable import HashTable
 from package import Package
 from data import import_packages, import_distances
 from truck import Truck
-from simulate import buildRoute
+from routebuilder import buildRoute
 
 
 #print(packages[7]['packageId'])
@@ -66,7 +66,7 @@ for item in package_list:
     packages.insert(package['packageId'], package)
 
 #Use Package class method to view the package contents
-#print(packages[1].packageView())
+print(packages[1].packageView())
 
 # Print out the distance between two addreses using the dist_map address keys rather than dealing with numbers
 #print(distance_table[dist_map['4580 S 2300 E']][dist_map['4300 S 1300 E']])

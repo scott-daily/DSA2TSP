@@ -3,6 +3,7 @@ class Truck:
         self.packageList = []
 
     def loadPackage(self, package):
+        #package[6] = 'On the truck'
         self.packageList.append(package)
 
     def unloadPackage(self, package):
