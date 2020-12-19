@@ -1,3 +1,4 @@
+import math
 from data import import_packages, import_distances
 from hashtable import HashTable
 from truck import Truck
@@ -88,19 +89,54 @@ routeDistance(truck1_route)
 # Time entered as: 11:35 am  OR 2:40 pm
 # 8 AM = 480 minutes after midnight.  
 
-# TODO: Create converTime function or manage the times
-def convertTime(time):
-    hours = time.split(':')[0]
-    minutes = time.split(':')[1].split()[0]
+# TODO: Create time converting functions
+
+def timeToMinutes(time):
+    hours = int(time.split(':')[0])
+    minutes = int(time.split(':')[1].split()[0])
     meridiem = time.split(':')[1].split()[1]
-    print(hours)
-    print(minutes)
-    print(meridiem)
-    hours_to_minutes = int(hours)*60
-    print(hours_to_minutes)
+
+    if meridiem == 'PM':
+        hours += 12
+
+    return (hours*60) + minutes
+
+def minutesToTime(minutes):
+    if minutes > 60:
+        hours = math.floor(minutes / 60)
+        minutes = minutes % 60
+
+        if hours < 10:
+            if minutes < 10:
+                return "0" + str(hours) + ":0" + str(minutes) + " AM"
+            else:
+                return "0" + str(hours) + ":" + str(minutes) + " AM"
+        elif hours >= 12:
+            if hours == 12:
+                if minutes < 10:
+                    return str(hours) + ":0" + str(minutes) + " PM"
+                else:
+                    return str(hours) + ":" + str(minutes) + " PM"
+            elif hours > 12:
+                hours -= 12
+                if hours < 10:
+                    if minutes < 10:
+                        return "0" + str(hours) + ":0" + str(minutes) + " PM"
+                    else:
+                        return "0" + str(hours) + ":" + str(minutes) + " PM"
+                else:
+                    if minutes < 10:
+                        return str(hours) + ":0" + str(minutes) + " PM"
+                    else:
+                        return str(hours) + ":" + str(minutes) + " PM"
+    else:
+        if minutes < 10:
+            return "00:0" + str(minutes) + " AM"
+        else:
+            return "00:" + str(minutes) + " AM"
 
 
-convertTime('8:30 AM')
+print(minutesToTime(timeToMinutes('2:42 PM')))
 
 
 #def simulate(route_list,start_time,end_time):
