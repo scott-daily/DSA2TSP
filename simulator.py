@@ -28,7 +28,7 @@ for item in package_list:
     #packages[1]['packageId'] = 373
     #print(packages[1]['deliveryTime'])
 
-print(packages[15].packageView())
+#print(packages[15].packageView())
 
 #packages[2].deliveryTime = '8:45 AM'
 #print(packages[2]['deliveryTime'])
@@ -44,20 +44,20 @@ truck1 = Truck()
 # Iterate through the package numbers in the truck list and add them to the Truck objects list.  Must use 'package_number-1' since the index
 # of the package list begins at 0 for package #1.  O(N)
 for package_number in truck1_list:
-    packages[package_number].packageLocation = 'On the truck'
+    packages[package_number].packageLocation = 'At the hub'
     truck1.loadPackage(package_list[package_number-1])
 
-print(packages[15].packageView())
+#print(packages[15].packageView())
 
 truck2 = Truck()
 for package_number in truck2_list:
-    packages[package_number].packageLocation = 'On the truck'
+    packages[package_number].packageLocation = 'At the hub'
     truck2.loadPackage(package_list[package_number-1])
 
 truck3 = Truck()
 
 for package_number in truck3_list:
-    packages[package_number].packageLocation = 'On the truck'
+    packages[package_number].packageLocation = 'At the hub'
     truck3.loadPackage(package_list[package_number-1])
 
 truck1_route = buildRoute(truck1)
@@ -105,45 +105,92 @@ def minutesToTime(minutes):
     if minutes > 60:
         hours = math.floor(minutes / 60)
         minutes = minutes % 60
+        merediem = " AM"
 
         if hours < 10:
             if minutes < 10:
-                return "0" + str(hours) + ":0" + str(minutes) + " AM"
+                return "0" + str(hours) + ":0" + str(minutes) + merediem
             else:
-                return "0" + str(hours) + ":" + str(minutes) + " AM"
+                return "0" + str(hours) + ":" + str(minutes) + merediem
+        elif hours >= 10 and hours < 12:
+            if minutes < 10:
+                return str(hours) + ":0" + str(minutes) + merediem
+            else:
+                return str(hours) + ":" + str(minutes) + merediem
         elif hours >= 12:
+            merediem = " PM"
             if hours == 12:
                 if minutes < 10:
-                    return str(hours) + ":0" + str(minutes) + " PM"
+                    return str(hours) + ":0" + str(minutes) + merediem
                 else:
-                    return str(hours) + ":" + str(minutes) + " PM"
+                    return str(hours) + ":" + str(minutes) + merediem
             elif hours > 12:
                 hours -= 12
                 if hours < 10:
                     if minutes < 10:
-                        return "0" + str(hours) + ":0" + str(minutes) + " PM"
+                        return "0" + str(hours) + ":0" + str(minutes) + merediem
                     else:
-                        return "0" + str(hours) + ":" + str(minutes) + " PM"
+                        return "0" + str(hours) + ":" + str(minutes) + merediem
                 else:
                     if minutes < 10:
-                        return str(hours) + ":0" + str(minutes) + " PM"
+                        return str(hours) + ":0" + str(minutes) + merediem
                     else:
-                        return str(hours) + ":" + str(minutes) + " PM"
+                        return str(hours) + ":" + str(minutes) + merediem
     else:
         if minutes < 10:
             return "00:0" + str(minutes) + " AM"
         else:
             return "00:" + str(minutes) + " AM"
 
-
-print(minutesToTime(timeToMinutes('2:42 PM')))
+print(minutesToTime(620))
+print(minutesToTime(timeToMinutes('11:15 AM')))
 
 # To run complete simulation, run simulate three times with each trucks route list and start & end times. (Use 5 or 6 PM for end times on full simulation)
 # For function so that someone can enter a time and see all package data, use the time they want to see data for as the end time.  
 # This way, the simulate function will only "deliver" packages until the end_time and then we will report all package statuses at this time to 
 # show all the package statuses or a specific packages status.
 
-#def simulate(route_list,start_time,end_time):
+def simulateDelivery(route_list,truck_list,start_time,end_time):
+    # Iterate through each address in the route list and then 
+    # check if any of the packages are in the package list.
+    # if they are print the packages ID
+
+    # Check if this parameter is T or F to add time for truck returning to Hub at the end of route.
+    # If distance between two points is 1.7, then take 2.7 / 18.0 = .15.  Multiply .15 * 60 to 
+    # see .15 is 9 minutes.  Add 9 minutes to the start_time.  Check if the start_time is currently
+    # less than the end_time after calculating distance to the next address. If it is 
+    # then the program must terminate so that the status of the packages at the specified
+    # time can be displayed.
+
+    currentTime = timeToMinutes(start_time)
+    endTime = timeToMinutes(end_time)
+
+    print(route_list)
+
+    # Iterate through packages and check if the package ID exists in the truck_list that was passed to the simulate function.
+    # If it is, update the packages location information to show that it is en route since when the simulation begins, 
+    # the trucks leave the hub.
+    for package in package_list:
+        if int(package[0]) in truck_list:
+            packages[int(package[0])].packageLocation = 'En route'
+
+    for i in range(len(route_list)):
+        if (i != len(route_list)-1):
+            distance_between = float(distance_table[dist_map[route_list[i]]][dist_map[route_list[i+1]]])
+            print("Distance between ", route_list[i]," and ", route_list[i+1]," is ", distance_between)
+            currentTime += math.floor(((distance_between/18.0)*60))
+            for package in package_list:
+                    if route_list[i] in package:
+                        if int(package[0]) in truck_list:
+                            packages[int(package[0])].deliveryTime = minutesToTime(currentTime)
+                            packages[int(package[0])].packageLocation = 'Delivered'
+                            #print("deliveryTime: ",packages[int(package[0])]['deliveryTime'])
+                            #print("packageLocation: ",packages[int(package[0])]['packageLocation'])
 
     
+simulateDelivery(truck1_route, truck1_list,'08:00 AM','08:00 PM')
 
+index = 1
+while index < 41:
+    print(packages[index])
+    index += 1

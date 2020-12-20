@@ -8,9 +8,7 @@ class Package:
         self.deadline = delivery_deadline
         self.mass = mass_kg
         self.packageLocation = "At the hub"
-        self.deliveryTime = "None"
-        #if packageLocation is == 'Delivered', when user checks packages at a time, then return the delivered at: + self.deliveryTime.  
-        # update self.deliveryTime when package is delivered during simulation
+        self.deliveryTime = None
 
     def packageView(self):
         return {'packageId': self.packageId, 'address': self.address, 'city': self.city, 'state': self.state, 'zipcode': self.zipCode, 'deadline': self.deadline, 'mass': self.mass,
@@ -27,6 +25,9 @@ class Package:
 
     def __setitem__(self, attribute, newValue):
         return setattr(self, attribute, newValue)
+
+    def __repr__(self):
+        return "['" + str(self.packageId) + "'" + ", " + "'" + str(self.address) + "'" + ", " + str(self.city) + "'" + ", " + "'" + str(self.state) + "'" + ", " + "'" + str(self.zipCode) + "'" + ", " + "'" + str(self.deadline) + "'" + ", " + "'" + str(self.mass) + "'" + ", " + "'" + str(self.packageLocation) + "'" + ", " + "'" + str(self.deliveryTime)+ "']"
 
     
 '''Per requirement F and G, the user should be able to check the status (at the hub, en route, or delivered at time X)
