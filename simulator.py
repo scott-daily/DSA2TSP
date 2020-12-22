@@ -168,6 +168,8 @@ def simulateDelivery(route_list,truck_list,start_time,end_time):
     currentTime = timeToMinutes(start_time)
     endTime = timeToMinutes(end_time)
 
+    last_visited_address = [route_list[0]]
+    route_list.pop(0)
     print(route_list)
 
     # Check if the current time is already greater than or equal to the specified ending time at the start of the simulation.  If it is
@@ -183,24 +185,23 @@ def simulateDelivery(route_list,truck_list,start_time,end_time):
                 packages[int(package[0])].packageLocation = 'En route'
 
         for i in range(len(route_list)):
-            if (i != len(route_list)-1):
-                distance_between = float(distance_table[dist_map[route_list[i]]][dist_map[route_list[i+1]]])
-                print("Distance between ", route_list[i]," and ", route_list[i+1]," is ", distance_between)
-                currentTime += math.floor(((distance_between/18.0)*60))
-                # Check to see if the currentTime after going to the next address is greater than or equal to the specified end time.
-                # If it is greater, then this is where the route ends and the final time is the end time.
-                if currentTime >= endTime:
-                    return endTime  # <--- NEED TO ADD FINAL ADDRESS"S DISTANCE TO TIME & UPDATE ANY PACKAGES AT THIS ADDRESS!
-                else:
-                    for package in package_list:
-                        if route_list[i] in package:
-                            if int(package[0]) in truck_list:
-                                print(package)
-                                packages[int(package[0])].deliveryTime = minutesToTime(currentTime)
-                                packages[int(package[0])].packageLocation = 'Delivered'
-                                #print("deliveryTime: ",packages[int(package[0])]['deliveryTime'])
-                                #print("packageLocation: ",packages[int(package[0])]['packageLocation'])
-
+            distance_between = float(distance_table[dist_map[last_visited_address[-1]]][dist_map[route_list[i]]])
+            print("Distance between ", last_visited_address[-1]," and ", route_list[i]," is ", distance_between)
+            currentTime += math.floor(((distance_between/18.0)*60))
+            # Check to see if the currentTime after going to the next address is greater than or equal to the specified end time.
+            # If it is greater, then this is where the route ends and the final time is the end time.
+            if currentTime >= endTime:
+                return endTime
+            else:
+                for package in package_list:
+                    if route_list[i] in package:
+                        if int(package[0]) in truck_list:
+                            print(package)
+                            packages[int(package[0])].deliveryTime = minutesToTime(currentTime)
+                            packages[int(package[0])].packageLocation = 'Delivered'
+                            # Append the last address so that on the next iteration around the last visited address is updated
+                            if route_list[i] not in last_visited_address:
+                                last_visited_address.append(route_list[i])
 
 
 # Method to see how far a truck gets with a start & end time.  Does not have any effect on the package
@@ -249,14 +250,6 @@ while truck1_return_time is None:
     pass
 
 simulateDelivery(truck3_route,truck3_list,truck1_return_time,'05:00 PM')
+#simulateDelivery(truck3_route,truck3_list,'08:0 AM','05:00 PM')
 
-print(truck3_route)
 displayPackageStatus()
-
-for i in range(len(truck3_list)):
-    print(i)
-
-# Checking length to compare final address in a route list and how to 
-# add the final distance to the currentTime and update the packages at the final address.
-print("lenght of truck3 list:")
-print(len(truck3_list))
