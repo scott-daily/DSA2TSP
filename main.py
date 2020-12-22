@@ -8,10 +8,6 @@ from truck import Truck
 from routebuilder import buildRoute
 
 
-#print(packages[7]['packageId'])
-#packages[7]['packageLocation'] = 'On the truck'
-#print(packages[7]['packageLocation'])
-
 # Use the import_packages function to transfer CSV package data into a python list.
 package_list = import_packages()
 
@@ -37,12 +33,10 @@ for package in truck3_list:
 
 print(sorted(truck1_list + truck2_list + truck3_list))
 
+#Use Package class method to view an individual packages status
+print(packages[1].packageView())
 
-#print(truck2)
 
-#buildRoute(truck1)
-#buildRoute(truck2)
-buildRoute(truck3)
 
 
 #print(truck1)
@@ -57,7 +51,6 @@ dist_map = {'HUB': 0,'1060 Dalton Ave S': 1, '1330 2100 S': 2, '1488 4800 S': 3,
                         '380 W 2880 S': 18, '410 S State St': 19, '4300 S 1300 E': 20, '4580 S 2300 E': 21, '5025 State St': 22, '5100 South 2700 West': 23, 
                         '5383 South 900 East +ACM-104': 24, '600 E 900 South': 25, '6351 South 900 East': 26}
 
-#print(distance_table)
 
 # Iterate through each list in the imported list of Packages.  
 # Create a new package with the associated parameters and then insert that into the custom packages hash table.

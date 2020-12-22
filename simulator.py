@@ -23,17 +23,9 @@ packages = HashTable(41)
 for item in package_list:
     package = Package(item[0], item[1], item[2], item[3], item[4], item[5], item[6])
     package.packageLocation = 'At the hub'
-    package.deliveryTime = None          # <--- FIGURE OUT HOW TO ADD INITIAL PACKAGE LOCATION & DELIVERY TIME DURING PACK CREATION SO 
-    packages.insert(package['packageId'], package)  # INDEX ACESSING WORKS LATER ON!!
-    #print(package['packageLocation'])
-    #packages[1]['packageId'] = 373
-    #print(packages[1]['deliveryTime'])
+    package.deliveryTime = None          
+    packages.insert(package['packageId'], package)
 
-#print(packages[15].packageView())
-
-#packages[2].deliveryTime = '8:45 AM'
-#print(packages[2]['deliveryTime'])
-#print(packages[3])
 
 # Initiate custom hash table with 41 slots
 #print(package_list)
@@ -48,8 +40,6 @@ for package_number in truck1_list:
     packages[package_number].packageLocation = 'At the hub'
     truck1.loadPackage(package_list[package_number-1])
 
-#print(packages[15].packageView())
-
 truck2 = Truck()
 for package_number in truck2_list:
     packages[package_number].packageLocation = 'At the hub'
@@ -62,7 +52,7 @@ for package_number in truck3_list:
     truck3.loadPackage(package_list[package_number-1])
 
 truck1_route = buildRoute(truck1)
-# Append 'HUB' so that truck1 returns to the Hub so that the driver can switch to truck3
+# Append 'HUB' so that truck1 returns to the Hub so that the driver can switch to truck3 when the truck returns
 truck1_route.append('HUB')
 truck2_route = buildRoute(truck2)
 truck3_route = buildRoute(truck3)
@@ -241,15 +231,15 @@ def displayPackageStatus():
 # Use simulateDelivery with truck1's route, list, start & end time as the start_time parameter for
 # truck3 in the call to simulateDelivery.
 
-truck1_return_time = minutesToTime(getDeliveryEndTime(truck1_route, '08:00 AM','05:00 PM'))
+truck1_return_time = minutesToTime(getDeliveryEndTime(truck1_route, '08:00 AM','11:15 AM'))
 
-simulateDelivery(truck1_route, truck1_list,'08:00 AM','05:00 PM')
-simulateDelivery(truck2_route,truck2_list, '09:05 AM', '05:00 PM')
+simulateDelivery(truck1_route, truck1_list,'08:00 AM','11:15 AM')
+simulateDelivery(truck2_route,truck2_list, '09:05 AM', '11:15 AM')
 
 while truck1_return_time is None:
     pass
 
-simulateDelivery(truck3_route,truck3_list,truck1_return_time,'05:00 PM')
-#simulateDelivery(truck3_route,truck3_list,'08:0 AM','05:00 PM')
+simulateDelivery(truck3_route,truck3_list,truck1_return_time,'11:15 AM')
+#simulateDelivery(truck3_route,truck3_list,'08:00 AM','05:00 PM')
 
 displayPackageStatus()
