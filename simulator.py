@@ -27,61 +27,6 @@ for item in package_list:
     packages.insert(package['packageId'], package)
 
 
-# Initiate custom hash table with 41 slots
-#print(package_list)
-truck1_list = [15,16,14,20,21,31,40,29,13,12,22,26,27,19,23,34]
-truck2_list = [25,6,1,4,8,7,3,28,30,33,35,36,37,38,39,18] #truck2 cannot leave depot until 9:05 am due to delayed packages
-truck3_list = [10,5,9,32,11,24,17,2]
-
-truck1 = Truck()
-# Iterate through the package numbers in the truck list and add them to the Truck objects list.  Must use 'package_number-1' since the index
-# of the package list begins at 0 for package #1.  O(N)
-for package_number in truck1_list:
-    packages[package_number].packageLocation = 'At the hub'
-    truck1.loadPackage(package_list[package_number-1])
-
-truck2 = Truck()
-for package_number in truck2_list:
-    packages[package_number].packageLocation = 'At the hub'
-    truck2.loadPackage(package_list[package_number-1])
-
-truck3 = Truck()
-
-for package_number in truck3_list:
-    packages[package_number].packageLocation = 'At the hub'
-    truck3.loadPackage(package_list[package_number-1])
-
-truck1_route = buildRoute(truck1)
-# Append 'HUB' so that truck1 returns to the Hub so that the driver can switch to truck3 when the truck returns
-truck1_route.append('HUB')
-truck2_route = buildRoute(truck2)
-truck3_route = buildRoute(truck3)
-
-print(routeDistance(truck3_route))
-
-# MUST BE ABLE TO SEE ALL PACKAGE STATUSES AT ANY GIVEN TIME!  locationStatus = 'At the hub, 'En route', 'Delivered'
-# SET all packages packageLocation to 'En route' when truck leaves hub at specified time.  
-# When package is dropped off, set packageLocation to Delivered and deliveryTime to the time upon delivery
-
-# USE SOMETHING LIKE: for package_number in truck1_list:
-#                       packages[package_number].packageLocation = 'En route'
-
-# Trucks go 18 MPH
-# Trucks cannot leave before 8:00 AM
-# Only time spent driving matters.  Only have to calculate where truck would be in it's route 
-
-# Within simulate, could use buildRoute method with each truck loaded within simulate as well.  
-# Would build a route for truck1, and truck2.  Since truck1 leaves first, it will return for the remaining packages to load and then deliver them.
-# Allowed to load truck3 and have driver of truck1 switch at HUB to pre-loaded truck3 for final delivery route.
-
-# The user should be able to look up package #19 at 10:43 am and check the info and status. 
-# Having the user provide a time and printing the info and status of all the packages will meet this requirement.
-
-# Time entered as: 11:35 am  OR 2:40 pm
-# 8 AM = 480 minutes after midnight.  
-
-# TODO: Create time converting functions
-
 def timeToMinutes(time):
     hours = int(time.split(':')[0])
     minutes = int(time.split(':')[1].split()[0])
@@ -133,9 +78,6 @@ def minutesToTime(minutes):
         else:
             return "00:" + str(minutes) + " AM"
 
-print(minutesToTime(620))
-print(minutesToTime(timeToMinutes('11:15 AM')))
-
 # To run complete simulation, run simulate three times with each trucks route list and start & end times. (Use 5 or 6 PM for end times on full simulation)
 # For function so that someone can enter a time and see all package data, use the time they want to see data for as the end time.  
 # This way, the simulate function will only "deliver" packages until the end_time and then we will report all package statuses at this time to 
@@ -153,14 +95,11 @@ def simulateDelivery(route_list,truck_list,start_time,end_time):
     # then the program must terminate so that the status of the packages at the specified
     # time can be displayed.
 
-    print("start_time: ",start_time)
-
     currentTime = timeToMinutes(start_time)
     endTime = timeToMinutes(end_time)
 
     last_visited_address = [route_list[0]]
     route_list.pop(0)
-    print(route_list)
 
     # Check if the current time is already greater than or equal to the specified ending time at the start of the simulation.  If it is
     # then just return the ending time.
@@ -176,7 +115,6 @@ def simulateDelivery(route_list,truck_list,start_time,end_time):
 
         for i in range(len(route_list)):
             distance_between = float(distance_table[dist_map[last_visited_address[-1]]][dist_map[route_list[i]]])
-            print("Distance between ", last_visited_address[-1]," and ", route_list[i]," is ", distance_between)
             currentTime += math.floor(((distance_between/18.0)*60))
             # Check to see if the currentTime after going to the next address is greater than or equal to the specified end time.
             # If it is greater, then this is where the route ends and the final time is the end time.
@@ -186,7 +124,6 @@ def simulateDelivery(route_list,truck_list,start_time,end_time):
                 for package in package_list:
                     if route_list[i] in package:
                         if int(package[0]) in truck_list:
-                            print(package)
                             packages[int(package[0])].deliveryTime = minutesToTime(currentTime)
                             packages[int(package[0])].packageLocation = 'Delivered'
                             # Append the last address so that on the next iteration around the last visited address is updated
@@ -225,21 +162,3 @@ def displayPackageStatus():
         index += 1
 
 
-# To fulfill requirement of viewing the status of any package at any time
-# Run simulateDelivery with the specified end time for all three routes.  
-# The start_time for truck3 depends on the end time for truck1's route.    
-# Use simulateDelivery with truck1's route, list, start & end time as the start_time parameter for
-# truck3 in the call to simulateDelivery.
-
-truck1_return_time = minutesToTime(getDeliveryEndTime(truck1_route, '08:00 AM','11:15 AM'))
-
-simulateDelivery(truck1_route, truck1_list,'08:00 AM','11:15 AM')
-simulateDelivery(truck2_route,truck2_list, '09:05 AM', '11:15 AM')
-
-while truck1_return_time is None:
-    pass
-
-simulateDelivery(truck3_route,truck3_list,truck1_return_time,'11:15 AM')
-#simulateDelivery(truck3_route,truck3_list,'08:00 AM','05:00 PM')
-
-displayPackageStatus()
