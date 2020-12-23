@@ -1,10 +1,12 @@
-import asyncio
 import math
-from data import import_packages, import_distances
-from hashtable import HashTable
-from truck import Truck
+from data import import_distances, import_packages
 from package import Package
-from routebuilder import buildRoute, routeDistance
+from hashtable import HashTable
+
+distance_table = import_distances()
+package_list = import_packages()
+packages = HashTable(41)
+print("instantiating hash table in simulator.py")
 
 dist_map = {'HUB': 0,'1060 Dalton Ave S': 1, '1330 2100 S': 2, '1488 4800 S': 3, '177 W Price Ave': 4, '195 W Oakland Ave': 5, '2010 W 500 S': 6,
                         '2300 Parkway Blvd': 7, '233 Canyon Rd': 8, '2530 S 500 E': 9, '2600 Taylorsville Blvd': 10, '2835 Main St': 11, '300 State St': 12,
@@ -12,85 +14,14 @@ dist_map = {'HUB': 0,'1060 Dalton Ave S': 1, '1330 2100 S': 2, '1488 4800 S': 3,
                         '380 W 2880 S': 18, '410 S State St': 19, '4300 S 1300 E': 20, '4580 S 2300 E': 21, '5025 State St': 22, '5100 South 2700 West': 23, 
                         '5383 South 900 East +ACM-104': 24, '600 E 900 South': 25, '6351 South 900 East': 26}
 
-# Use the import_distances function to transfer CSV distance data into a python list.
-distance_table = import_distances()
-# Use the import_packages function to transfer CSV package data into a python list.
-package_list = import_packages()
-packages = HashTable(41)
-
-# Iterate through each list in the imported list of Packages.  
-# Create a new package with the associated parameters and then insert the newly created Package object into the custom hash table (packages).
 for item in package_list:
-    package = Package(item[0], item[1], item[2], item[3], item[4], item[5], item[6])
-    package.packageLocation = 'At the hub'
-    package.deliveryTime = None          # <--- FIGURE OUT HOW TO ADD INITIAL PACKAGE LOCATION & DELIVERY TIME DURING PACK CREATION SO 
-    packages.insert(package['packageId'], package)  # INDEX ACESSING WORKS LATER ON!!
-    #print(package['packageLocation'])
-    #packages[1]['packageId'] = 373
-    #print(packages[1]['deliveryTime'])
-
-#print(packages[15].packageView())
-
-#packages[2].deliveryTime = '8:45 AM'
-#print(packages[2]['deliveryTime'])
-#print(packages[3])
-
-# Initiate custom hash table with 41 slots
-#print(package_list)
-truck1_list = [15,16,14,20,21,31,40,29,13,12,22,26,27,19,23,34]
-truck2_list = [25,6,1,4,8,7,3,28,30,33,35,36,37,38,39,18] #truck2 cannot leave depot until 9:05 am due to delayed packages
-truck3_list = [10,5,9,32,11,24,17,2]
-
-truck1 = Truck()
-# Iterate through the package numbers in the truck list and add them to the Truck objects list.  Must use 'package_number-1' since the index
-# of the package list begins at 0 for package #1.  O(N)
-for package_number in truck1_list:
-    packages[package_number].packageLocation = 'At the hub'
-    truck1.loadPackage(package_list[package_number-1])
-
-#print(packages[15].packageView())
-
-truck2 = Truck()
-for package_number in truck2_list:
-    packages[package_number].packageLocation = 'At the hub'
-    truck2.loadPackage(package_list[package_number-1])
-
-truck3 = Truck()
-
-for package_number in truck3_list:
-    packages[package_number].packageLocation = 'At the hub'
-    truck3.loadPackage(package_list[package_number-1])
-
-truck1_route = buildRoute(truck1)
-# Append 'HUB' so that truck1 returns to the Hub so that the driver can switch to truck3
-truck1_route.append('HUB')
-truck2_route = buildRoute(truck2)
-truck3_route = buildRoute(truck3)
-
-print(routeDistance(truck3_route))
-
-# MUST BE ABLE TO SEE ALL PACKAGE STATUSES AT ANY GIVEN TIME!  locationStatus = 'At the hub, 'En route', 'Delivered'
-# SET all packages packageLocation to 'En route' when truck leaves hub at specified time.  
-# When package is dropped off, set packageLocation to Delivered and deliveryTime to the time upon delivery
-
-# USE SOMETHING LIKE: for package_number in truck1_list:
-#                       packages[package_number].packageLocation = 'En route'
-
-# Trucks go 18 MPH
-# Trucks cannot leave before 8:00 AM
-# Only time spent driving matters.  Only have to calculate where truck would be in it's route 
-
-# Within simulate, could use buildRoute method with each truck loaded within simulate as well.  
-# Would build a route for truck1, and truck2.  Since truck1 leaves first, it will return for the remaining packages to load and then deliver them.
-# Allowed to load truck3 and have driver of truck1 switch at HUB to pre-loaded truck3 for final delivery route.
-
-# The user should be able to look up package #19 at 10:43 am and check the info and status. 
-# Having the user provide a time and printing the info and status of all the packages will meet this requirement.
+        package = Package(item[0], item[1], item[2], item[3], item[4], item[5], item[6])
+        package.packageLocation = 'At the hub'
+        package.deliveryTime = None          
+        packages.insert(package['packageId'], package)
 
 # Time entered as: 11:35 am  OR 2:40 pm
 # 8 AM = 480 minutes after midnight.  
-
-# TODO: Create time converting functions
 
 def timeToMinutes(time):
     hours = int(time.split(':')[0])
@@ -143,8 +74,6 @@ def minutesToTime(minutes):
         else:
             return "00:" + str(minutes) + " AM"
 
-print(minutesToTime(620))
-print(minutesToTime(timeToMinutes('11:15 AM')))
 
 # To run complete simulation, run simulate three times with each trucks route list and start & end times. (Use 5 or 6 PM for end times on full simulation)
 # For function so that someone can enter a time and see all package data, use the time they want to see data for as the end time.  
@@ -162,15 +91,11 @@ def simulateDelivery(route_list,truck_list,start_time,end_time):
     # less than the end_time after calculating distance to the next address. If it is 
     # then the program must terminate so that the status of the packages at the specified
     # time can be displayed.
-
-    print("start_time: ",start_time)
-
     currentTime = timeToMinutes(start_time)
     endTime = timeToMinutes(end_time)
 
     last_visited_address = [route_list[0]]
     route_list.pop(0)
-    print(route_list)
 
     # Check if the current time is already greater than or equal to the specified ending time at the start of the simulation.  If it is
     # then just return the ending time.
@@ -186,7 +111,6 @@ def simulateDelivery(route_list,truck_list,start_time,end_time):
 
         for i in range(len(route_list)):
             distance_between = float(distance_table[dist_map[last_visited_address[-1]]][dist_map[route_list[i]]])
-            print("Distance between ", last_visited_address[-1]," and ", route_list[i]," is ", distance_between)
             currentTime += math.floor(((distance_between/18.0)*60))
             # Check to see if the currentTime after going to the next address is greater than or equal to the specified end time.
             # If it is greater, then this is where the route ends and the final time is the end time.
@@ -196,13 +120,18 @@ def simulateDelivery(route_list,truck_list,start_time,end_time):
                 for package in package_list:
                     if route_list[i] in package:
                         if int(package[0]) in truck_list:
-                            print(package)
                             packages[int(package[0])].deliveryTime = minutesToTime(currentTime)
                             packages[int(package[0])].packageLocation = 'Delivered'
                             # Append the last address so that on the next iteration around the last visited address is updated
                             if route_list[i] not in last_visited_address:
                                 last_visited_address.append(route_list[i])
 
+# Method to display current status of all packages in the package hash table
+def displayPackageStatus():
+    index = 1
+    while index < 41:
+        print(packages[index])
+        index += 1
 
 # Method to see how far a truck gets with a start & end time.  Does not have any effect on the package
 # just tracks how long it takes for it 
@@ -227,29 +156,3 @@ def getDeliveryEndTime(route_list,start_time,end_time):
                     
     return currentTime
 
-# Method to display current status of all packages in the package hash table
-def displayPackageStatus():
-    index = 1
-    while index < 41:
-        print(packages[index])
-        index += 1
-
-
-# To fulfill requirement of viewing the status of any package at any time
-# Run simulateDelivery with the specified end time for all three routes.  
-# The start_time for truck3 depends on the end time for truck1's route.    
-# Use simulateDelivery with truck1's route, list, start & end time as the start_time parameter for
-# truck3 in the call to simulateDelivery.
-
-truck1_return_time = minutesToTime(getDeliveryEndTime(truck1_route, '08:00 AM','05:00 PM'))
-
-simulateDelivery(truck1_route, truck1_list,'08:00 AM','05:00 PM')
-simulateDelivery(truck2_route,truck2_list, '09:05 AM', '05:00 PM')
-
-while truck1_return_time is None:
-    pass
-
-simulateDelivery(truck3_route,truck3_list,truck1_return_time,'05:00 PM')
-#simulateDelivery(truck3_route,truck3_list,'08:0 AM','05:00 PM')
-
-displayPackageStatus()
