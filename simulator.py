@@ -1,12 +1,10 @@
+import asyncio
 import math
-from data import import_distances, import_packages
-from package import Package
+from data import import_packages, import_distances
 from hashtable import HashTable
-
-distance_table = import_distances()
-package_list = import_packages()
-packages = HashTable(41)
-print("instantiating hash table in simulator.py")
+from truck import Truck
+from package import Package
+from routebuilder import buildRoute, routeDistance
 
 dist_map = {'HUB': 0,'1060 Dalton Ave S': 1, '1330 2100 S': 2, '1488 4800 S': 3, '177 W Price Ave': 4, '195 W Oakland Ave': 5, '2010 W 500 S': 6,
                         '2300 Parkway Blvd': 7, '233 Canyon Rd': 8, '2530 S 500 E': 9, '2600 Taylorsville Blvd': 10, '2835 Main St': 11, '300 State St': 12,
@@ -14,14 +12,20 @@ dist_map = {'HUB': 0,'1060 Dalton Ave S': 1, '1330 2100 S': 2, '1488 4800 S': 3,
                         '380 W 2880 S': 18, '410 S State St': 19, '4300 S 1300 E': 20, '4580 S 2300 E': 21, '5025 State St': 22, '5100 South 2700 West': 23, 
                         '5383 South 900 East +ACM-104': 24, '600 E 900 South': 25, '6351 South 900 East': 26}
 
-for item in package_list:
-        package = Package(item[0], item[1], item[2], item[3], item[4], item[5], item[6])
-        package.packageLocation = 'At the hub'
-        package.deliveryTime = None          
-        packages.insert(package['packageId'], package)
+# Use the import_distances function to transfer CSV distance data into a python list.
+distance_table = import_distances()
+# Use the import_packages function to transfer CSV package data into a python list.
+package_list = import_packages()
+packages = HashTable(41)
 
-# Time entered as: 11:35 am  OR 2:40 pm
-# 8 AM = 480 minutes after midnight.  
+# Iterate through each list in the imported list of Packages.  
+# Create a new package with the associated parameters and then insert the newly created Package object into the custom hash table (packages).
+for item in package_list:
+    package = Package(item[0], item[1], item[2], item[3], item[4], item[5], item[6])
+    package.packageLocation = 'At the hub'
+    package.deliveryTime = None          
+    packages.insert(package['packageId'], package)
+
 
 def timeToMinutes(time):
     hours = int(time.split(':')[0])
@@ -74,7 +78,6 @@ def minutesToTime(minutes):
         else:
             return "00:" + str(minutes) + " AM"
 
-
 # To run complete simulation, run simulate three times with each trucks route list and start & end times. (Use 5 or 6 PM for end times on full simulation)
 # For function so that someone can enter a time and see all package data, use the time they want to see data for as the end time.  
 # This way, the simulate function will only "deliver" packages until the end_time and then we will report all package statuses at this time to 
@@ -91,6 +94,7 @@ def simulateDelivery(route_list,truck_list,start_time,end_time):
     # less than the end_time after calculating distance to the next address. If it is 
     # then the program must terminate so that the status of the packages at the specified
     # time can be displayed.
+
     currentTime = timeToMinutes(start_time)
     endTime = timeToMinutes(end_time)
 
@@ -126,12 +130,6 @@ def simulateDelivery(route_list,truck_list,start_time,end_time):
                             if route_list[i] not in last_visited_address:
                                 last_visited_address.append(route_list[i])
 
-# Method to display current status of all packages in the package hash table
-def displayPackageStatus():
-    index = 1
-    while index < 41:
-        print(packages[index])
-        index += 1
 
 # Method to see how far a truck gets with a start & end time.  Does not have any effect on the package
 # just tracks how long it takes for it 
@@ -155,4 +153,11 @@ def getDeliveryEndTime(route_list,start_time,end_time):
                     return endTime
                     
     return currentTime
+
+# Method to display current status of all packages in the package hash table
+def displayPackageStatus():
+    index = 1
+    while index < 41:
+        print(packages[index])
+        index += 1
 
