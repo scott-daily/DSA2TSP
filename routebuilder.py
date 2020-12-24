@@ -123,9 +123,9 @@ def routeDistance(route_list):
             total_distance += distance_between
             #print("Distance between ", route_list[i]," and ", route_list[i+1]," is ", distance_between)
 
-    #print("The total distance of the route is: ", total_distance)
+    print("The total distance of the route is: ", total_distance)
 
-    return(total_distance)
+    return(total_distance)  # TODO: <-- Add up all the route distances with the return to display total distance as well
 
 
         

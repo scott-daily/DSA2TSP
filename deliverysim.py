@@ -128,6 +128,8 @@ def simulateDelivery(route_list,truck_list,start_time,end_time):
                             if route_list[i] not in last_visited_address:
                                 last_visited_address.append(route_list[i])
 
+    routeDistance(route_list)
+
 # Method to see how far a truck gets with a start & end time.  Does not have any effect on the package
 # just tracks how long it takes for it 
 def getDeliveryEndTime(route_list,start_time,end_time):
