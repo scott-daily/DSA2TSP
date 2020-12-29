@@ -64,16 +64,24 @@ def runDeliverySim(package_id, end_time):
     # Use simulateDelivery with truck1's route, list, start & end time as the start_time parameter for
     # truck3 in the call to simulateDelivery.
 
-    truck1_return_time = minutesToTime(getDeliveryEndTime(truck1_route, '08:00 AM',end_time))
+    truck1_return_time = minutesToTime(getDeliveryEndTime(truck1_route, '08:00 AM',end_time)) # USE GET DELIVERY END TIME TO CALCULATE TOTAL DISTANCE
+                                                                                              # EndTime - Start Time / 18                  
 
-    simulateDelivery(truck1_route, truck1_list,'08:00 AM',end_time)
-    simulateDelivery(truck2_route,truck2_list,'09:05 AM',end_time)
+    truck1_time = simulateDelivery(truck1_route, truck1_list,'08:00 AM',end_time)
 
+    truck2_time = simulateDelivery(truck2_route,truck2_list,'09:05 AM',end_time)
+    
     while truck1_return_time is None:
         pass
 
-    simulateDelivery(truck3_route,truck3_list,truck1_return_time,end_time)
+    truck3_time = simulateDelivery(truck3_route,truck3_list,truck1_return_time,end_time)
 
+    total_distance = (((truck1_time + truck2_time + truck3_time) / 60.0) * 18.0)
+
+    print("-----------------------------------------------------------")
+    print("The total distance in miles traveled by all trucks was:", total_distance) # FIGURE OUT WHY TIMES UNDER 11 AM give an incorrect distance
+    print("The package statuses at the specified time that was input are displayed below:")
+    print("-----------------------------------------------------------")
     displayPackageStatus()
 
 
@@ -102,7 +110,7 @@ def simulateDelivery(route_list,truck_list,start_time,end_time):
     # Check if the current time is already greater than or equal to the specified ending time at the start of the simulation.  If it is
     # then just return the ending time.
     if currentTime >= endTime:
-        return endTime
+        return (endTime - timeToMinutes(start_time))
     else:
         # Iterate through packages and check if the package ID exists in the truck_list that was passed to the simulate function.
         # If it is, update the packages location information to show that it is en route since when the simulation begins, 
@@ -115,9 +123,9 @@ def simulateDelivery(route_list,truck_list,start_time,end_time):
             distance_between = float(distance_table[dist_map[last_visited_address[-1]]][dist_map[route_list[i]]])
             currentTime += math.floor(((distance_between/18.0)*60))
             # Check to see if the currentTime after going to the next address is greater than or equal to the specified end time.
-            # If it is greater, then this is where the route ends and the final time is the end time.
+            # If it is greater, then this is where the route ends and the time traveled is the end time minus the start time.
             if currentTime >= endTime:
-                return endTime
+                return (endTime - timeToMinutes(start_time))
             else:
                 for package in package_list:
                     if route_list[i] in package:
@@ -127,8 +135,8 @@ def simulateDelivery(route_list,truck_list,start_time,end_time):
                             # Append the last address so that on the next iteration around the last visited address is updated
                             if route_list[i] not in last_visited_address:
                                 last_visited_address.append(route_list[i])
-
-    routeDistance(route_list)
+    # Returns the amount of time in minutes the truck took to complete the delivery with the given end time.
+    return(currentTime - timeToMinutes(start_time))
 
 # Method to see how far a truck gets with a start & end time.  Does not have any effect on the package
 # just tracks how long it takes for it 
