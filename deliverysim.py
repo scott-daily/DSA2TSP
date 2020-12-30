@@ -17,7 +17,6 @@ dist_map = {'HUB': 0,'1060 Dalton Ave S': 1, '1330 2100 S': 2, '1488 4800 S': 3,
 distance_table = import_distances()
 # Use the import_packages function to transfer CSV package data into a python list.
 package_list = import_packages()
-print(package_list)
 packages = HashTable(41)
 
 # Iterate through each list in the imported list of Packages.  
@@ -34,7 +33,7 @@ for item in package_list:
 # by the time complexity of the buildRoute function, which is O(N^4 * logN).  This means that it's time complexity following these function calls is
 # O(N^5 * logN).  Finally, simulateDelivery is called and this has a time complexity of O(N^2).  So the overall complexity is O(N^7 * logN).
 # The space complexity is O(N).
-def runDeliverySim(package_id, end_time):
+def runDeliverySim(end_time):
     # Initiate custom hash table with 41 slots
     truck1_list = [15,16,14,20,21,31,40,29,13,12,22,26,27,19,23,34]
     truck2_list = [25,6,1,4,8,7,3,28,30,33,35,36,37,38,39,18] 

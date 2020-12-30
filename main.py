@@ -12,14 +12,16 @@ while True:
     print("Type 'time' to see package delivery status at a specific time")
     print("Type 'exit' to quit the program")
 
+    # Here we store the value of what the user inputs
     userInput = input()
 
+    # If the user inputs 'exit', then we exit the program.
     if userInput == 'exit':
         break
-
+    # If the user inputs 'run', then we run the complete program until all packages are delivered.
     if userInput == 'run':
-        runDeliverySim(None,'05:00 PM')
-
+        runDeliverySim('05:00 PM')
+    # If 'time' is the input, then a user input's a specific time to see the package status at this time.
     if userInput == 'time':
         print("Type in a specific time to view the package statuses at that time")
         print("The time must be entered in this exact format: '05:27 PM' or '11:17 AM'")
@@ -27,5 +29,5 @@ while True:
         time = input()
         print("The time entered was: ", time)
 
-        runDeliverySim(None, time)
+        runDeliverySim(time)
 
