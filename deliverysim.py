@@ -1,8 +1,8 @@
 import math
 
 from data import import_packages, import_distances
-from simulator import timeToMinutes, minutesToTime
-from routebuilder import buildRoute, routeDistance
+from minutes import timeToMinutes, minutesToTime
+from routebuilder import buildRoute
 from hashtable import HashTable
 from truck import Truck
 from package import Package
@@ -17,6 +17,7 @@ dist_map = {'HUB': 0,'1060 Dalton Ave S': 1, '1330 2100 S': 2, '1488 4800 S': 3,
 distance_table = import_distances()
 # Use the import_packages function to transfer CSV package data into a python list.
 package_list = import_packages()
+print(package_list)
 packages = HashTable(41)
 
 # Iterate through each list in the imported list of Packages.  
@@ -27,7 +28,12 @@ for item in package_list:
     package.deliveryTime = None          
     packages.insert(package['packageId'], package)
 
-
+# This is a function that is created to be run by the main method.  This function begins by initializing three truck
+# lists.  The packages are placed according to the stated requirements.  Trucks are set to leave at times so that all delayed packages, etc leave the
+# hub at the correct time.  It's time complexity is a combination of a single for loop for each truck which is O(N) multiplied
+# by the time complexity of the buildRoute function, which is O(N^4 * logN).  This means that it's time complexity following these function calls is
+# O(N^5 * logN).  Finally, simulateDelivery is called and this has a time complexity of O(N^2).  So the overall complexity is O(N^7 * logN).
+# The space complexity is O(N).
 def runDeliverySim(package_id, end_time):
     # Initiate custom hash table with 41 slots
     truck1_list = [15,16,14,20,21,31,40,29,13,12,22,26,27,19,23,34]
@@ -36,22 +42,24 @@ def runDeliverySim(package_id, end_time):
 
     
     # Iterate through the package numbers in the truck list and add them to the Truck objects list.  Must use 'package_number-1' since the index
-    # of the package list begins at 0 for package #1.  O(N)
+    # of the package list begins at 0 for package #1.  This has a time complexity of O(N).  It has a space complexity of O(1).
     truck1 = Truck()
     for package_number in truck1_list:
-        packages[package_number].packageLocation = 'At the hub'
-        truck1.loadPackage(package_list[package_number-1])
+            packages[package_number].packageLocation = 'At the hub'
+            truck1.loadPackage(package_list[package_number-1])
 
     truck2 = Truck()
     for package_number in truck2_list:
-        packages[package_number].packageLocation = 'At the hub'
-        truck2.loadPackage(package_list[package_number-1])
+            packages[package_number].packageLocation = 'At the hub'
+            truck2.loadPackage(package_list[package_number-1])
 
     truck3 = Truck()
     for package_number in truck3_list:
-        packages[package_number].packageLocation = 'At the hub'
-        truck3.loadPackage(package_list[package_number-1])
+            packages[package_number].packageLocation = 'At the hub'
+            truck3.loadPackage(package_list[package_number-1])
 
+    # After each Truck object has been intialized, the route is built for each trucks individual package list.
+    # The return values are the minutes taken to deliver the packages, which is utilized later to display the total miles traveled by all trucks.
     truck1_route = buildRoute(truck1)
     # Append 'HUB' so that truck1 returns to the Hub so that the driver can switch to truck3
     truck1_route.append('HUB')
@@ -64,8 +72,7 @@ def runDeliverySim(package_id, end_time):
     # Use simulateDelivery with truck1's route, list, start & end time as the start_time parameter for
     # truck3 in the call to simulateDelivery.
 
-    truck1_return_time = minutesToTime(getDeliveryEndTime(truck1_route, '08:00 AM',end_time)) # USE GET DELIVERY END TIME TO CALCULATE TOTAL DISTANCE
-                                                                                              # EndTime - Start Time / 18                  
+    truck1_return_time = minutesToTime(getDeliveryEndTime(truck1_route, '08:00 AM',end_time))                
 
     truck1_time = simulateDelivery(truck1_route, truck1_list,'08:00 AM',end_time)
 
@@ -79,46 +86,46 @@ def runDeliverySim(package_id, end_time):
     total_distance = (((truck1_time + truck2_time + truck3_time) / 60.0) * 18.0)
 
     print("-----------------------------------------------------------")
-    print("The total distance in miles traveled by all trucks was:", total_distance) # FIGURE OUT WHY TIMES UNDER 11 AM give an incorrect distance
+    print("The total distance in miles traveled by all trucks was:", total_distance) 
     print("The package statuses at the specified time that was input are displayed below:")
+    print("If the 'run' command was used, then it will show the final delivery time for all packages")
     print("-----------------------------------------------------------")
     displayPackageStatus()
 
 
-# To run complete simulation, run simulate three times with each trucks route list and start & end times. (Use 5 or 6 PM for end times on full simulation)
-# For function so that someone can enter a time and see all package data, use the time they want to see data for as the end time.  
-# This way, the simulate function will only "deliver" packages until the end_time and then we will report all package statuses at this time to 
-# show all the package statuses or a specific packages status.
+# To run complete simulation, run simulateDelivery three times with each trucks route list and start & end times. (Use 5 PM for end times on complete simulation)
+# This way, the simulate function will only "deliver" packages until the end_time and then report all package statuses at this time to 
+# display all the current package statuses.  The time complexity is O(N^2) and the space complexity is O(1).
 def simulateDelivery(route_list,truck_list,start_time,end_time):
-    # Iterate through each address in the route list and then 
-    # check if any of the packages are in the package list.
-    # if they are print the packages ID
-
-    # Check if this parameter is T or F to add time for truck returning to Hub at the end of route.
-    # If distance between two points is 1.7, then take 2.7 / 18.0 = .15.  Multiply .15 * 60 to 
-    # see .15 is 9 minutes.  Add 9 minutes to the start_time.  Check if the start_time is currently
-    # less than the end_time after calculating distance to the next address. If it is 
-    # then the program must terminate so that the status of the packages at the specified
-    # time can be displayed.
 
     currentTime = timeToMinutes(start_time)
     endTime = timeToMinutes(end_time)
 
+    # This variable is created to hold the first address in the route list.
+    # Later we want to start on the next address within the loop, so we remove the first address as well from the route list.
     last_visited_address = [route_list[0]]
     route_list.pop(0)
 
     # Check if the current time is already greater than or equal to the specified ending time at the start of the simulation.  If it is
-    # then just return the ending time.
+    # then just return the total time taken.
     if currentTime >= endTime:
         return (endTime - timeToMinutes(start_time))
     else:
         # Iterate through packages and check if the package ID exists in the truck_list that was passed to the simulate function.
         # If it is, update the packages location information to show that it is en route since when the simulation begins, 
-        # the trucks leave the hub.
+        # the trucks are "leaving" the hub.
         for package in package_list:
             if int(package[0]) in truck_list:
                 packages[int(package[0])].packageLocation = 'En route'
 
+        # Here we iterate through the number of items in the route list.
+        # We calculate the distance between each address and then convert the distance into a time and add it to the current time.
+        # We check to see if the current time is greater than or equal to the given end time.  If it is, then time is up.
+        # We return the total time taken up until the given ending time.  If it is not, then we iterate through each package in the package_list
+        # and check to see if the current address is in the package.  If it is, then we check if that package is in the trucks package list.
+        # If it is in the package list, then we update the packages delivery time and location to the current time.
+        # Finally, we cehck to make sure that last visited address does not have teh same address already in it.  If it does not, then
+        # we add the current address being iterated over to last_visited_address so that it is correct upon the next iteration.
         for i in range(len(route_list)):
             distance_between = float(distance_table[dist_map[last_visited_address[-1]]][dist_map[route_list[i]]])
             currentTime += math.floor(((distance_between/18.0)*60))
@@ -138,8 +145,9 @@ def simulateDelivery(route_list,truck_list,start_time,end_time):
     # Returns the amount of time in minutes the truck took to complete the delivery with the given end time.
     return(currentTime - timeToMinutes(start_time))
 
-# Method to see how far a truck gets with a start & end time.  Does not have any effect on the package
-# just tracks how long it takes for it 
+# Method to see how far a truck gets with a given start & end time.  Does not have any effect on the packages
+# just tracks how long it would take to deliver.  This is used to find out how long truck 1's route will take so that truck 3 can leave at right when truck1 returns 
+# to the Hub and the driver switches to truck 3.  It has a time complexity of O(N) and a space complexity of O(1).
 def getDeliveryEndTime(route_list,start_time,end_time):
     currentTime = timeToMinutes(start_time)
     endTime = timeToMinutes(end_time)
@@ -164,7 +172,7 @@ def getDeliveryEndTime(route_list,start_time,end_time):
 # Method to display current status of all packages in the package hash table.
 # After printing the package statuses, it then re-writes the package hash table so that the next time a user 
 # issues a command, such as time and enters a time, it will not show the package statuses from the a prior command such as run that already
-# delivered all packages.  
+# delivered all packages.  It has a time complexity of O(N) and a space complexity of O(N).
 def displayPackageStatus():
     index = 1
     while index < 41:

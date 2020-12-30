@@ -4,21 +4,30 @@ from hashtable import HashTable
 from truck import Truck
 from package import Package
 
-
+# distance_table is initialized with the result of the import_distances function.  This iterates through and adds all the distances from the distance data csv file
+# into a list of lists containing all the distance data.
 distance_table = import_distances()
+# package_list is initialized with the result of the import_packages function.  This iterates through the package csv file and adds each row as a list of package data.
 package_list = import_packages()
+# packages is initalized as an empty Hash Table object with an initial capacity of 41. This is done in O(1) time complexity and O(1) space complexity.
 packages = HashTable(41)
 
+# This is a python dictionary used to hold a mapping of addresses to indexes for readability.  It is initialized in O(1) time complexity.  It has O(1) space complexity.
 dist_map = {'HUB': 0,'1060 Dalton Ave S': 1, '1330 2100 S': 2, '1488 4800 S': 3, '177 W Price Ave': 4, '195 W Oakland Ave': 5, '2010 W 500 S': 6,
                         '2300 Parkway Blvd': 7, '233 Canyon Rd': 8, '2530 S 500 E': 9, '2600 Taylorsville Blvd': 10, '2835 Main St': 11, '300 State St': 12,
                         '3060 Lester St': 13, '3148 S 1100 W': 14, '3365 S 900 W': 15, '3575 W Valley Central Station bus Loop': 16, '3595 Main St': 17, 
                         '380 W 2880 S': 18, '410 S State St': 19, '4300 S 1300 E': 20, '4580 S 2300 E': 21, '5025 State St': 22, '5100 South 2700 West': 23, 
                         '5383 South 900 East +ACM-104': 24, '600 E 900 South': 25, '6351 South 900 East': 26}
 
+# This for loop goes over each line in the package's list and creates a new Package object with the attributes and then inserts this Package
+# object into the custom Hash Table "packages".  This has a run time of O(N).  It's space complexity is O(N).
 for item in package_list:
     package = Package(item[0], item[1], item[2], item[3], item[4], item[5], item[6])
     packages.insert(package['packageId'], package)
 
+# This method is used to build the route for the Truck object that the function is called with.  
+# The algorithm's steps are explained in-depth within the written rubric report in section B1.
+# The Big O running time for this function is O(N^4 * log N).  The space complexity is O(N).
 def buildRoute(truck):
     #Start route_list with the HUB because the truck always has to start from the HUB address
     route_list = ['HUB']
@@ -113,19 +122,6 @@ def buildRoute(truck):
                         no_deadline_packages.remove(package)
 
     return route_list
-
-def routeDistance(route_list):
-    total_distance = 0
-
-    for i in range(len(route_list)):
-        if (i != len(route_list)-1):
-            distance_between = float(distance_table[dist_map[route_list[i]]][dist_map[route_list[i+1]]])
-            total_distance += distance_between
-            #print("Distance between ", route_list[i]," and ", route_list[i+1]," is ", distance_between)
-
-    print("The total distance of the route is: ", total_distance)
-
-    return(total_distance)  # TODO: <-- Add up all the route distances with the return to display total distance as well
 
 
         
