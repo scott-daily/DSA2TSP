@@ -28,11 +28,9 @@ for item in package_list:
     packages.insert(package['packageId'], package)
 
 # This is a function that is created to be run by the main method.  This function begins by initializing three truck
-# lists.  The packages are placed according to the stated requirements.  Trucks are set to leave at times so that all delayed packages, etc leave the
-# hub at the correct time.  It's time complexity is a combination of a single for loop for each truck which is O(N) multiplied
-# by the time complexity of the buildRoute function, which is O(N^4 * logN).  This means that it's time complexity following these function calls is
-# O(N^5 * logN).  Finally, simulateDelivery is called and this has a time complexity of O(N^2).  So the overall complexity is O(N^7 * logN).
-# The space complexity is O(N).
+# lists.  The packages are placed according to the stated requirements.  Trucks are set to leave at times so that all delayed packages leave the
+# hub at the correct time per the requirements.  It's time complexity is equivalent to buildRoute's of O(N^3), since this is the highest
+# time complexity within the function. The space complexity is O(N).
 def runDeliverySim(end_time):
     # Initiate custom hash table with 41 slots
     truck1_list = [15,16,14,20,21,31,40,29,13,12,22,26,27,19,23,34]

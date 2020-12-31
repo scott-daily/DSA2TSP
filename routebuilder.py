@@ -1,7 +1,6 @@
 import time
 from data import import_packages, import_distances
 from hashtable import HashTable
-from truck import Truck
 from package import Package
 
 # distance_table is initialized with the result of the import_distances function.  This iterates through and adds all the distances from the distance data csv file
@@ -27,7 +26,8 @@ for item in package_list:
 
 # This method is used to build the route for the Truck object that the function is called with.  
 # The algorithm's steps are explained in-depth within the written rubric report in section B1.
-# The Big O running time for this function is O(N^4 * log N).  The space complexity is O(N).
+# The Big O running time for this function is O(N^3).  This is because there are three nested loops, starting with the while loop
+# which then contains a for loop, within another for loop.  The space complexity is O(N).
 def buildRoute(truck):
     #Start route_list with the HUB because the truck always has to start from the HUB address
     route_list = ['HUB']
