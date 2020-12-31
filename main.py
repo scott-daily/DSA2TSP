@@ -28,6 +28,5 @@ while True:
 
         time = input()
         print("The time entered was: ", time)
-
         runDeliverySim(time)
 
